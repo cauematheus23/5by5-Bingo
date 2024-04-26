@@ -6,8 +6,6 @@ int[] rodadas = new int[99];
 int qtd_jogadores = 2, qtd_cartelas = 3;
 int[][][,]vetor_cartelas = new int[qtd_jogadores][][,];
 int[][][,]matriz_aux = new int[qtd_jogadores][][,];
-int[,] matriz_auxiliar_1 = new int[5, 5];
-int[,] matriz_auxiliar_2 = new int[5, 5];
 int contador_rodadas = 0, jogador_1 = 0, jogador_2 = 0;
 bool linha = false, coluna = false, cartela_cheia = false;
 void Imprimir_Matrizes(int[,] matriz, int[,] matriz_aux)
@@ -19,14 +17,12 @@ void Imprimir_Matrizes(int[,] matriz, int[,] matriz_aux)
             if (matriz_aux[i, j] == 1)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(matriz[i, j] + " ");
+                Console.Write("{0:00} ",matriz[i, j]);
                 Console.ResetColor();
             }
             else
             {
-
-
-                Console.Write(matriz[i, j] + " ");
+                Console.Write("{0:00} ",matriz[i, j]);
             }
         }
         Console.WriteLine();
@@ -132,6 +128,7 @@ rodadas = Gerar_Vetor_Aleatorios(99);
 Console.WriteLine(rodadas.Length);
 void Verificar_Vetores(int[,] matriz, ref int[,] matriz_auxiliar_1)
 {
+    cartela_cheia = false;
     linha = false;
     coluna = false;
     
@@ -164,7 +161,7 @@ void Verificar_Vetores(int[,] matriz, ref int[,] matriz_auxiliar_1)
         }
         Console.WriteLine("Numero da Rodada: " + rodadas[contador_rodadas]);
         Imprimir_Matrizes(matriz, matriz_auxiliar_1);
-        if (linha == true || coluna == true)
+        if (linha == true || coluna == true )
         {
             break;
         }
