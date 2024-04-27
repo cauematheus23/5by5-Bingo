@@ -1,40 +1,59 @@
-﻿//int[] popular_matrizes = new int[98];
-
-
+﻿
 int[,] cartela1 = new int[5, 5];
 int[] rodadas = new int[99];
-int qtd_jogadores = 2, qtd_cartelas = 1;
-int[][][,]vetor_cartelas = new int[qtd_jogadores][][,];
-int[][][,]matriz_aux = new int[qtd_jogadores][][,];
-int[,] cont_linha = new int[qtd_jogadores, qtd_cartelas];
-int[,] cont_coluna = new int[qtd_jogadores, qtd_cartelas];
-int[,] cont_cartela = new int[qtd_jogadores, qtd_cartelas];
-int contador_rodadas = 0, jogador_1 = 0, jogador_2 = 0;
-bool bingo = false;
-
-
-void Imprimir_Matrizes(int[,] matriz, int[,] matriz_aux)
+int qtd_jogadores, qtd_cartelas;
+do
 {
-    for (int i = 0; i < 5; i++)
+    Console.WriteLine("Digite a quantidade de jogadores: ");
+    qtd_jogadores = int.Parse(Console.ReadLine()); 
+    if(qtd_jogadores < 2)
     {
-        for (int j = 0; j < 5; j++)
-        {
-            if (matriz_aux[i, j] == 1)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("{0:00} ",matriz[i, j]);
-                Console.ResetColor();
-            }
-            else
-            {
-                Console.Write("{0:00} ",matriz[i, j]);
-            }
-        }
-        Console.WriteLine();
+        Console.WriteLine("Minimo de 2 jogadores para inicar");
     }
+} while(qtd_jogadores < 2);
+do
+{
+    Console.WriteLine("Digite a quantidade de jogadores: ");
+    qtd_cartelas = int.Parse(Console.ReadLine());
+    if (qtd_cartelas < 1)
+    {
+        Console.WriteLine("Minimo de 1 cartela para inicar");
+    }
+} while (qtd_jogadores < 1);
+int[,][,]cartelas_jogadores = new int[qtd_jogadores,qtd_cartelas][,]; //Todas as Cartelas de Todos os jogadores
+int[,][,]matriz_aux = new int[qtd_jogadores,qtd_cartelas][,]; //Matrizes Inicializadas em 0 porem quando o numero sorteado existir no espelho dela troca pra 1
+int contador_rodadas = 0;
+bool bingo = false, ganhou_coluna,ganhou_linha;
+
+
+void Imprimir_Matrizes(int[,][,]jogadores_cartelas,int[,][,] matriz_aux)
+{
+    for (int jogadores = 0; jogadores < qtd_jogadores; jogadores++)
+    {
+        for (int cartelas = 0; cartelas < qtd_cartelas; cartelas++)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    if (matriz_aux[jogadores, cartelas][i,j] == 1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("{0:00} ", jogadores_cartelas[jogadores, cartelas][i,j]);
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.Write("{0:00} ", jogadores_cartelas[jogadores, cartelas][i, j]);
+                    }
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+    } 
+    
 }
-
-
 int[] gerar_vetores()
 {
     int[] popular_matrizes = new int[99];
@@ -44,10 +63,7 @@ int[] gerar_vetores()
     }
     return popular_matrizes;
 }
-
-
-
-int[] Gerar_Vetor_Aleatorios(int tamanho_vetor)
+int[] Numeros_Sorteados(int tamanho_vetor)
 {
     int indice = 0;
     int[] numeros_sorteados = new int[tamanho_vetor];
@@ -74,137 +90,107 @@ int[] Gerar_Vetor_Aleatorios(int tamanho_vetor)
     //    Console.Write(numeros_sorteados[i] + " ");
     return numeros_sorteados;
 }
-
-
-int[,] Gerar_Cartelas()
+int[,][,] Matriz_Jogador_Cartela()
 {
-    int[] popular_matrizes = gerar_vetores();
-    int linha = 0, coluna = 0;
-    int[,] cartela = new int[5, 5];
+    int[,][,] cartelas_jogadores = new int[qtd_jogadores, qtd_cartelas][,];
 
-    while (linha < 5)
+    for (int jogadores = 0; jogadores < qtd_jogadores; jogadores++)
     {
-        while (true)
+        for (int cartelas = 0; cartelas < qtd_cartelas; cartelas++)
         {
-            int j = new Random().Next(1, 99);
-            if (popular_matrizes[j] != 0)
+            //Criar as cartelas pra cada jogador
+            int[] popular_matrizes = gerar_vetores();
+            int linha = 0, coluna = 0;
+
+            cartelas_jogadores[jogadores, cartelas] = new int[5, 5];
+            //Preencher todas as linhas e colunas
+            while (linha < 5)
             {
-                cartela[linha, coluna] = popular_matrizes[j];
-                popular_matrizes[j] = 0;
-                coluna++;
-                if (coluna > 4)
+                int j = new Random().Next(0, popular_matrizes.Length);
+                if (popular_matrizes[j] != 0)
                 {
-                    linha++;
-                    coluna = 0;
+                    cartelas_jogadores[jogadores, cartelas][linha, coluna] = popular_matrizes[j];
+                    popular_matrizes[j] = 0;
+                    coluna++;
+                    if (coluna > 4)
+                    {
+                        linha++;
+                        coluna = 0;
+                    }
                 }
-                break;
             }
+
+            matriz_aux[jogadores, cartelas] = new int[5, 5];
         }
     }
 
-    return cartela;
+    return cartelas_jogadores;
 }
 
 
 
-int [,] Gerar_Vetor_Cartelas()
+
+cartelas_jogadores = Matriz_Jogador_Cartela();
+//Imprimir_Matrizes(cartelas_jogadores, matriz_aux);
+
+rodadas = Numeros_Sorteados(99);
+Console.WriteLine(rodadas.Length);
+void Verificar_Vetores(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1)
 {
-    int[,] cartela = new int[5, 5];
 
-    for (int i = 0; i < qtd_jogadores; i++)
+    int[] vencedor = new int[qtd_jogadores];
+    for (int contador_rodadas = 0; contador_rodadas < rodadas.Length; contador_rodadas++)
     {
-        vetor_cartelas[i] = new int[qtd_cartelas][,];
-        matriz_aux[i] = new int[qtd_cartelas][,];
-        for (int j = 0; j < qtd_cartelas; j++)
+        for (int jogadores = 0; jogadores < qtd_jogadores; jogadores++)
         {
-            vetor_cartelas[i][j] = Gerar_Cartelas();
-            matriz_aux[i][j] = new int [5,5];    
-            cartela = vetor_cartelas[i][j];
+            for (int cartelas = 0; cartelas < qtd_cartelas; cartelas++)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    for (int j = 0; j < 5; j++)
+                    {
+
+                        if (rodadas[contador_rodadas] == matriz[jogadores, cartelas][i, j])
+                        {
+                            matriz_auxiliar_1[jogadores, cartelas][i, j] = 1;
+                        }
+                    }
+                }
+            }
         }
-    }return cartela;
+
+        Console.WriteLine("Numero da Rodada: " + rodadas[contador_rodadas]);
+        Imprimir_Matrizes(matriz, matriz_auxiliar_1);
+        Console.ReadKey();
+    }
 }
 
-Gerar_Vetor_Cartelas();
+Verificar_Vetores(cartelas_jogadores, ref matriz_aux);
 
-
-//Imprimir_Matrizes(vetor_cartelas[0][1], matriz_aux[0][1]);
-Console.WriteLine();
-
-//for (int i = 0; i < 5; i++)
+//for (contador_rodadas = 0; contador_rodadas < rodadas.Length; contador_rodadas++)
 //{
-//    for (int j = 0; j < 5; j++)
+//    for (int i = 0; i < qtd_jogadores; i++)
 //    {
-//        Console.Write(vetor_cartelas[0][2][i, j] + " ");
+//        for (int j = 0; j < qtd_cartelas; j++)
+//        {
+//            Verificar_Vetores(vetor_cartelas[i][j], ref matriz_aux[i][j]);
+//            Console.WriteLine("Jogador " + i + " cartela " + j);
+//        }
 //    }
+//    Console.ReadKey();
+//}
+
+
+
+//Console.ReadKey();
+
+//for (int i =0; i < qtd_jogadores;i++)
+//{
+//    for (int j = 0;j < qtd_cartelas; j++)
+//    {
+//        Console.WriteLine($"Jogador {i + 1} -- Cartela {j + 1} ");
+//        Imprimir_Matrizes(vetor_cartelas[i][j], matriz_aux[i][j]);
+//    }
+
 //    Console.WriteLine();
 //}
-//Console.WriteLine();
-
-
-
-
-rodadas = Gerar_Vetor_Aleatorios(99);
-Console.WriteLine(rodadas.Length);
-
-
-void Verificar_Vetores(int[,] matriz, ref int[,] matriz_auxiliar_1, ref int contador_cartela)
-{
-    
-    bool ganhador_coluna = false;
-    bool ganhador_linha = false;
-    ;
-   
-        for (int i = 0; i < 5; i++)
-        {
-            for (int j = 0; j < 5; j++)
-            {
-
-                if (rodadas[contador_rodadas] == matriz[i, j])
-                {
-                    matriz_auxiliar_1[i, j] = 1;
-                    contador_cartela++;
-                }
-                if (ganhador_coluna == false &&matriz_auxiliar_1[0, j] == 1 && matriz_auxiliar_1[1, j] == 1 && matriz_auxiliar_1[2, j] == 1 && matriz_auxiliar_1[3, j] == 1 && matriz_auxiliar_1[4, j] == 1)
-                {
-                      ganhador_coluna = true;
-
-                      break;
-                }
-            }
-
-            if (matriz_auxiliar_1[i, 0] == 1 && matriz_auxiliar_1[i, 1] == 1 && matriz_auxiliar_1[i, 2] == 1 && matriz_auxiliar_1[i, 3] == 1 && matriz_auxiliar_1[i, 4] == 1)
-            {
-                ganhador_linha = true;
-                break;
-            }
-
-        }
-    
-        Console.WriteLine("Numero da Rodada: " + rodadas[contador_rodadas]);
- 
-
-
-
-        Imprimir_Matrizes(matriz, matriz_auxiliar_1);
-        
-
-    }
-
-
-
-for (contador_rodadas = 0; contador_rodadas < rodadas.Length; contador_rodadas++)
-{
-    for (int i = 0; i < qtd_jogadores; i++)
-    {
-        for (int j = 0; j < qtd_cartelas; j++)
-        {
-            Verificar_Vetores(vetor_cartelas[i][j], ref matriz_aux[i][j], ref cont_cartela[i,j]);
-            Console.WriteLine("Jogador " + i + " cartela " + j + " Contador cartela " + cont_cartela[i,j]);
-        }
-    }
-}
-
-
-
-Console.ReadKey();
-
