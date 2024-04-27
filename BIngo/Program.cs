@@ -1,5 +1,5 @@
 ﻿
-int[,] cartela1 = new int[5, 5];
+
 int[] rodadas = new int[99];
 int qtd_jogadores, qtd_cartelas;
 do
@@ -22,8 +22,13 @@ do
 } while (qtd_jogadores < 1);
 int[,][,]cartelas_jogadores = new int[qtd_jogadores,qtd_cartelas][,]; //Todas as Cartelas de Todos os jogadores
 int[,][,]matriz_aux = new int[qtd_jogadores,qtd_cartelas][,]; //Matrizes Inicializadas em 0 porem quando o numero sorteado existir no espelho dela troca pra 1
+int[] pontos_jogadores = new int[qtd_jogadores];
 int contador_rodadas = 0;
-bool bingo = false, ganhou_coluna,ganhou_linha;
+int rodada_ganhou_linha = 0;
+int rodada_ganhou_coluna = 0;
+int jogador_ganhou_linha = 0;
+int jogador_ganhou_coluna = 0;
+bool bingo = false, ganhou_coluna = false,ganhou_linha = false;
 
 
 void Imprimir_Matrizes(int[,][,]jogadores_cartelas,int[,][,] matriz_aux)
@@ -126,21 +131,19 @@ int[,][,] Matriz_Jogador_Cartela()
 
     return cartelas_jogadores;
 }
-
-
-
-
 cartelas_jogadores = Matriz_Jogador_Cartela();
 //Imprimir_Matrizes(cartelas_jogadores, matriz_aux);
-
 rodadas = Numeros_Sorteados(99);
 Console.WriteLine(rodadas.Length);
-void Verificar_Vetores(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1)
+void Verificar_Vetores(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1, int[] pontos)
 {
-
+    
+    
     int[] vencedor = new int[qtd_jogadores];
-    for (int contador_rodadas = 0; contador_rodadas < rodadas.Length; contador_rodadas++)
+    for (int contador_rodadas = 0; contador_rodadas < rodadas.Length && !bingo; contador_rodadas++)
     {
+        
+                Console.Clear();
         for (int jogadores = 0; jogadores < qtd_jogadores; jogadores++)
         {
             for (int cartelas = 0; cartelas < qtd_cartelas; cartelas++)
@@ -153,19 +156,122 @@ void Verificar_Vetores(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1)
                         if (rodadas[contador_rodadas] == matriz[jogadores, cartelas][i, j])
                         {
                             matriz_auxiliar_1[jogadores, cartelas][i, j] = 1;
+
                         }
                     }
                 }
             }
         }
+        for (int jogadores = 0; jogadores < qtd_jogadores && !bingo; jogadores++)
+        {
+            for (int cartelas = 0; cartelas < qtd_cartelas && !bingo; cartelas++)
+            {
+                int contador = 0;
+                bool cartela_cheia = false;
+                for (int i = 0; i < 5; i++)
+                {
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (matriz_auxiliar_1[jogadores, cartelas][i, j] == 1)
+                        {
+                            contador++;
+                        }
+                        if (contador == 25)
+                        {
+                            cartela_cheia = true;
+                            break;
+                        }
+                        
 
-        Console.WriteLine("Numero da Rodada: " + rodadas[contador_rodadas]);
+                    }
+                }
+                if (cartela_cheia)
+                {
+                    bingo = true;
+                    Console.WriteLine($"Jogador {jogadores + 1} fez bingo na rodada {contador_rodadas + 1}");
+                
+                    break;
+                    
+                }
+            }
+        }
+        for (int jogadores = 0; jogadores < qtd_jogadores && !ganhou_coluna; jogadores++)
+        {
+            for (int cartelas = 0; cartelas < qtd_cartelas && !ganhou_coluna; cartelas++)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    bool completou_coluna = false;
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (matriz_auxiliar_1[jogadores, cartelas][j, i] != 1)
+                        {
+                            break;
+                        }
+                        if (j == 4)
+                        {
+                            completou_coluna = true;
+                        }
+                    }
+                    if (completou_coluna)
+                    {
+                        jogador_ganhou_coluna = jogadores;
+                        pontos[jogadores] += 1;
+                        rodada_ganhou_coluna = contador_rodadas + 1;
+                        ganhou_coluna = true;
+                        Console.WriteLine($"Jogador {jogadores + 1} ganhou Coluna na rodada {rodada_ganhou_coluna}");
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (int jogadores = 0; jogadores < qtd_jogadores && !ganhou_linha; jogadores++)
+        {
+            for (int cartelas = 0; cartelas < qtd_cartelas && !ganhou_linha; cartelas++)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    bool completou_linha = false;
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (matriz_auxiliar_1[jogadores, cartelas][i, j] != 1)
+                        {
+                            break;
+                        }
+                        if (j == 4)
+                        {
+                            completou_linha = true;
+                        }
+                    }
+                    if (completou_linha)
+                    {
+                        jogador_ganhou_linha = jogadores;
+                        pontos[jogadores] += 1;
+                        rodada_ganhou_coluna = contador_rodadas + 1;
+                        ganhou_linha = true;
+                        Console.WriteLine($"Jogador {jogadores + 1} ganhou Linha na rodada {rodada_ganhou_coluna}");
+                        break;
+                    }
+                }
+            }
+        }
+
+     
+        Console.WriteLine($"{contador_rodadas + 1}° Rodada\nNumero Sorteado -> {rodadas[contador_rodadas]}");
         Imprimir_Matrizes(matriz, matriz_auxiliar_1);
+       
         Console.ReadKey();
     }
 }
 
-Verificar_Vetores(cartelas_jogadores, ref matriz_aux);
+Verificar_Vetores(cartelas_jogadores, ref matriz_aux,pontos_jogadores);
+Console.WriteLine($"O Jogador {jogador_ganhou_linha + 1} ganhou linha na rodada {rodada_ganhou_linha}");
+Console.WriteLine($"O Jogador {jogador_ganhou_coluna + 1} ganhou coluna na rodada {rodada_ganhou_coluna}");
+for (int i = 0; i < qtd_jogadores; i++)
+{
+    Console.WriteLine(pontos_jogadores[i]);
+}
 
 //for (contador_rodadas = 0; contador_rodadas < rodadas.Length; contador_rodadas++)
 //{
