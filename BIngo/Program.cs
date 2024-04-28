@@ -1,5 +1,8 @@
-﻿int[] rodadas = new int[99];
+﻿int[] rodadas = new int[99]; //inicializa a quantidade de rodadas
 int qtd_jogadores, qtd_cartelas;
+Console.WriteLine("========================================");
+Console.WriteLine("     OLÁ, BEM VINDO AO JOGO DE BINGO     ");
+Console.WriteLine("========================================");
 do
 {
     Console.WriteLine("Digite a quantidade de jogadores: ");
@@ -21,7 +24,6 @@ do
 int[,][,] cartelas_jogadores = new int[qtd_jogadores, qtd_cartelas][,]; //Todas as Cartelas de Todos os jogadores
 int[,][,] matriz_aux = new int[qtd_jogadores, qtd_cartelas][,]; //Matrizes Inicializadas em 0 porem quando o numero sorteado existir no espelho dela troca pra 1
 int[] rodada_linha_coluna = new int[2];
-
 void Imprimir_Matrizes(int[,][,] jogadores_cartelas, int[,][,] matriz_aux)
 {
     for (int jogadores = 0; jogadores < qtd_jogadores; jogadores++)
@@ -138,7 +140,7 @@ void Verificar_Jogo(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1, int[] pon
     int bingo = 0, ganhou_coluna = 0, ganhou_linha = 0, contador_vencedor_linha = 0, contador_vencedor_coluna = 0;
     //Verifica a cartela principal e modifica a auxiliar
     for (int contador_rodadas = 0; contador_rodadas < rodadas.Length && bingo == 0; contador_rodadas++)
-    {
+    {   
         Console.Clear();
         Console.WriteLine($"{contador_rodadas + 1}° Rodada\nNumero Sorteado -> {rodadas[contador_rodadas]}");
         Console.WriteLine("==================================================================================");
@@ -205,7 +207,7 @@ void Verificar_Jogo(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1, int[] pon
                             contador_vencedor_coluna++;
                             rodada_linha_coluna[1] = contador_rodadas + 1;
                             pontos[jogadores] += 1;
-                            Console.WriteLine($"Jogador {jogadores + 1} ganhou Coluna na rodada {contador_rodadas + 1}");
+                            Console.WriteLine($"Jogador {jogadores + 1} ganhou Coluna");
                         }
                     }
 
@@ -237,7 +239,7 @@ void Verificar_Jogo(int[,][,] matriz, ref int[,][,] matriz_auxiliar_1, int[] pon
                             rodada_linha_coluna[0] = contador_rodadas + 1;
                             contador_vencedor_linha++;
                             pontos[jogadores] += 1;
-                            Console.WriteLine($"Jogador {jogadores + 1} ganhou Linha na rodada {contador_rodadas + 1}");
+                            Console.WriteLine($"Jogador {jogadores + 1} ganhou Linha");
                         }
                     }
 
